@@ -89,6 +89,33 @@ class DockerContainer {
     return Future.value(const Stream.empty());
   }
 
+  Future<String> exec(String cmd, [bool detach = false]) async {
+    try {
+      String execId = (await dio?.post(
+        '/containers/$id/exec',
+        data: {
+          "AttachStdin": false,
+          "AttachStdout": true,
+          "AttachStderr": true,
+          "DetachKeys": "ctrl-c",
+          "Tty": false,
+          "Cmd": cmd.split(" "),
+          // "Env": ["FOO=bar"]
+        },
+      ))
+          ?.data["Id"];
+      String response = (await dio?.post("/exec/$execId/start",
+                  data: {"Detach": detach, "Tty": false}))
+              ?.data
+              .toString() ??
+          "";
+      return response;
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return Future.value("");
+  }
+
   DockerContainer.fromJson(Map<String, dynamic> json, Dio dioProvider) {
     dio = dioProvider;
     id = json['Id'];

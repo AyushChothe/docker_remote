@@ -14,15 +14,16 @@ class LogsPage extends HookConsumerWidget {
     final logs = ref.watch(getLogs(container));
     return Scaffold(
       appBar: AppBar(
-          title: Text.rich(TextSpan(children: [
-        const TextSpan(
-          text: "Logs",
-        ),
-        TextSpan(
-          text: " (${container?.names?[0]})",
-          style: Theme.of(context).textTheme.bodyText1,
-        ),
-      ]))),
+        title: Text.rich(TextSpan(children: [
+          const TextSpan(
+            text: "Logs",
+          ),
+          TextSpan(
+            text: " (${container?.names?[0]})",
+            style: Theme.of(context).textTheme.bodyText1,
+          ),
+        ])),
+      ),
       body: Center(
         child: logs.when(
             data: (logStream) {

@@ -1,3 +1,4 @@
+import 'package:docker_remote/pages/exec.dart';
 import 'package:docker_remote/pages/logs.dart';
 import 'package:docker_remote/providers/container.dart';
 import 'package:docker_remote/providers/docker_api.dart';
@@ -71,12 +72,36 @@ class ContainersPage extends HookConsumerWidget {
                                     return ref
                                         .refresh(getContainersProvider.future);
                                   },
-                                  icon:
-                                      const Icon(Icons.delete_outline_rounded),
+                                  icon: const Icon(Icons.refresh_rounded),
                                   label: const Text("Restart"))
                             ]
                           ],
-                        )
+                        ),
+                        if (containers[i].state?.toUpperCase() ==
+                            "RUNNING") ...[
+                          const Divider(
+                            height: 0,
+                          ),
+                          ButtonBar(
+                            alignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => ProviderScope(overrides: [
+                                        containerProvider
+                                            .overrideWithValue(containers[i])
+                                      ], child: const ExecPage()),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.terminal_rounded),
+                                label: const Text("Exec"),
+                              ),
+                            ],
+                          )
+                        ],
                       ],
                     ),
                   ),
