@@ -23,5 +23,5 @@ final getContainersProvider = FutureProvider((ref) async {
   return containers;
 }, dependencies: [dioProvider]);
 
-final getLogs = FutureProvider.family(
-    (ref, DockerContainer? arg) => arg?.logs() ?? Future.value(""));
+final getLogs = FutureProvider.autoDispose.family((ref, DockerContainer? arg) =>
+    arg?.logs() ?? Future.value(const Stream<List<int>>.empty()));

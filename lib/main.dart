@@ -3,6 +3,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// flutter run -d chrome --web-browser-flag "--disable-web-security"
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }

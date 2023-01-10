@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:docker_remote/providers/container.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:flutter/material.dart';
@@ -21,38 +23,47 @@ class LogsPage extends HookConsumerWidget {
           style: Theme.of(context).textTheme.bodyText1,
         ),
       ]))),
-      body: RefreshIndicator(
-        onRefresh: (() => ref.refresh(getLogs(container).future)),
-        child: Center(
-          child: logs.when(
-              data: (logString) {
-                final logs = logString
-                    .split("\n")
-                    .reversed
-                    .where((e) => e.trim().isNotEmpty)
-                    .toList();
-                return ListView.builder(
-                  itemCount: logs.length,
-                  itemBuilder: (context, i) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4.0,
-                      vertical: 2.0,
-                    ),
-                    child: ListTile(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      subtitle: Text("Line ${logs.length - i}"),
-                      tileColor: Theme.of(context).primaryColorDark,
-                      title: Text(logs[i]),
-                      dense: true,
-                    ),
-                  ),
-                );
-              },
-              error: (e, _) => Text(e.toString()),
-              loading: () => const CircularProgressIndicator()),
-        ),
+      body: Center(
+        child: logs.when(
+            data: (logStream) {
+              return StreamBuilder(
+                stream: logStream,
+                builder: (context, snap) {
+                  if (snap.hasData) {
+                    final logs = utf8
+                        .decode(snap.data!)
+                        .split("\n")
+                        .reversed
+                        .where((e) => e.trim().isNotEmpty)
+                        .toList();
+                    return ListView.builder(
+                      itemCount: logs.length,
+                      itemBuilder: (context, i) => i == 0
+                          ? const LinearProgressIndicator()
+                          : Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                                vertical: 2.0,
+                              ),
+                              child: ListTile(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                subtitle: Text("Line ${logs.length - i}"),
+                                tileColor: Theme.of(context).primaryColorDark,
+                                title: Text(logs[i - 1]),
+                                dense: true,
+                              ),
+                            ),
+                    );
+                  } else {
+                    return const Text("Logs");
+                  }
+                },
+              );
+            },
+            error: (e, _) => Text(e.toString()),
+            loading: () => const CircularProgressIndicator()),
       ),
     );
   }

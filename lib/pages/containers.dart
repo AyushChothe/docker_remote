@@ -47,30 +47,34 @@ class ContainersPage extends HookConsumerWidget {
                         ButtonBar(
                           alignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            TextButton.icon(
-                                onPressed: () async {
-                                  await containers[i].start();
-                                  return ref
-                                      .refresh(getContainersProvider.future);
-                                },
-                                icon: const Icon(Icons.play_arrow_outlined),
-                                label: const Text("Start")),
-                            TextButton.icon(
-                                onPressed: () async {
-                                  await containers[i].stop();
-                                  return ref
-                                      .refresh(getContainersProvider.future);
-                                },
-                                icon: const Icon(Icons.stop_outlined),
-                                label: const Text("Stop")),
-                            TextButton.icon(
-                                onPressed: () async {
-                                  await containers[i].restart();
-                                  return ref
-                                      .refresh(getContainersProvider.future);
-                                },
-                                icon: const Icon(Icons.delete_outline_rounded),
-                                label: const Text("Restart"))
+                            if (containers[i].state?.toUpperCase() != "RUNNING")
+                              TextButton.icon(
+                                  onPressed: () async {
+                                    await containers[i].start();
+                                    return ref
+                                        .refresh(getContainersProvider.future);
+                                  },
+                                  icon: const Icon(Icons.play_arrow_outlined),
+                                  label: const Text("Start"))
+                            else ...[
+                              TextButton.icon(
+                                  onPressed: () async {
+                                    await containers[i].stop();
+                                    return ref
+                                        .refresh(getContainersProvider.future);
+                                  },
+                                  icon: const Icon(Icons.stop_outlined),
+                                  label: const Text("Stop")),
+                              TextButton.icon(
+                                  onPressed: () async {
+                                    await containers[i].restart();
+                                    return ref
+                                        .refresh(getContainersProvider.future);
+                                  },
+                                  icon:
+                                      const Icon(Icons.delete_outline_rounded),
+                                  label: const Text("Restart"))
+                            ]
                           ],
                         )
                       ],

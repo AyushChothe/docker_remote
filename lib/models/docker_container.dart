@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
+import 'package:docker_remote/utils/stream_aggregator.dart';
 import 'package:flutter/material.dart';
 
 class DockerContainer {
@@ -61,19 +64,29 @@ class DockerContainer {
     }
   }
 
-  Future<String> logs() async {
+  Future<Stream<List<int>>> logs() async {
     try {
-      return (await dio?.get(
-            "/containers/$id/logs",
-            queryParameters: {"stdout": true, "stderr": true, "tail": 100},
-          ))
-              ?.data
-              .toString() ??
-          "";
+      final res = (((await dio?.get(
+        "/containers/$id/logs",
+        queryParameters: {
+          "stdin": true,
+          "stdout": true,
+          "stderr": true,
+          "follow": true,
+          "tail": 100
+        },
+        options: Options(
+          responseType: ResponseType.stream,
+        ),
+      ))
+                  ?.data as ResponseBody)
+              .stream)
+          .transform(AggregationTransformer());
+      return res;
     } catch (e) {
       debugPrint(e.toString());
     }
-    return "";
+    return Future.value(const Stream.empty());
   }
 
   DockerContainer.fromJson(Map<String, dynamic> json, Dio dioProvider) {
