@@ -15,7 +15,29 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Docker Remote',
-      theme: FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+      theme: FlexThemeData.light(
+        scheme: FlexScheme.bahamaBlue,
+        surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+        blendLevel: 9,
+        subThemesData: const FlexSubThemesData(
+          blendOnLevel: 10,
+          blendOnColors: false,
+        ),
+        visualDensity: FlexColorScheme.comfortablePlatformDensity,
+        // To use the playground font, add GoogleFonts package and uncomment
+        // fontFamily: GoogleFonts.notoSans().fontFamily,
+      ),
+      darkTheme: FlexThemeData.dark(
+        scheme: FlexScheme.bahamaBlue,
+        surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+        blendLevel: 15,
+        subThemesData: const FlexSubThemesData(
+          blendOnLevel: 20,
+        ),
+        visualDensity: FlexColorScheme.comfortablePlatformDensity,
+        // To use the Playground font, add GoogleFonts package and uncomment
+        // fontFamily: GoogleFonts.notoSans().fontFamily,
+      ),
       home: const HomePage(),
       debugShowCheckedModeBanner: false,
     );

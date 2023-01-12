@@ -26,6 +26,8 @@ class HomePage extends HookConsumerWidget {
                   Expanded(
                     child: TextFormField(
                       controller: hostname,
+                      decoration:
+                          const InputDecoration(hintText: "IP Address/Domain"),
                     ),
                   ),
                   IconButton(
@@ -37,20 +39,37 @@ class HomePage extends HookConsumerWidget {
                             final hosts = ref.watch(hostsProvider);
                             return Dialog(
                               child: hosts.when(
-                                data: (values) => ListView.builder(
-                                    itemCount: values.length,
-                                    itemBuilder: (context, i) {
-                                      return ListTile(
-                                        onTap: () {
-                                          hostname.text = values[i].ip;
-                                          Navigator.pop(context);
-                                        },
-                                        title: Text(values[i].ip),
-                                      );
-                                    }),
+                                data: (values) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RefreshIndicator(
+                                    onRefresh: () =>
+                                        ref.refresh(hostsProvider.future),
+                                    child: ListView.builder(
+                                        itemCount: values.length,
+                                        itemBuilder: (context, i) {
+                                          return Card(
+                                            child: ListTile(
+                                              onTap: () {
+                                                hostname.text = values[i].ip;
+                                                Navigator.pop(context);
+                                              },
+                                              title: Text(values[i].ip),
+                                            ),
+                                          );
+                                        }),
+                                  ),
+                                ),
                                 loading: () => const Center(
                                     child: CircularProgressIndicator()),
-                                error: (e, _) => Text(e.toString()),
+                                error: (e, _) => Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(e.toString()),
+                                    ],
+                                  ),
+                                ),
                               ),
                             );
                           }),
@@ -64,28 +83,40 @@ class HomePage extends HookConsumerWidget {
               ),
               TextFormField(
                 controller: port,
+                decoration: const InputDecoration(hintText: "Port"),
               ),
               const SizedBox(
                 height: 10,
               ),
               ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ProviderScope(
-                          overrides: [
-                            dioProvider.overrideWithValue(Dio(
-                              BaseOptions(
-                                baseUrl: "http://${hostname.text}:${port.text}",
-                              ),
-                            ))
-                          ],
-                          child: const DashboardPage(),
+                  onPressed: () async {
+                    try {
+                      final dio = Dio(
+                        BaseOptions(
+                          baseUrl: "http://${hostname.text}:${port.text}",
                         ),
-                      ),
-                    );
+                      );
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Connecting"),
+                        duration: Duration(seconds: 1),
+                      ));
+                      await dio.get('/version');
+
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ProviderScope(
+                            overrides: [dioProvider.overrideWithValue(dio)],
+                            child: const DashboardPage(),
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("Failed to connect to Server")));
+                    }
                   },
-                  child: const Text("Login"))
+                  child: const Text("Connect"))
             ]),
           ),
         ),

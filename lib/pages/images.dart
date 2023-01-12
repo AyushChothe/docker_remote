@@ -26,7 +26,7 @@ class ImagesPage extends HookConsumerWidget {
                     child: ListTile(
                       leading:
                           const CircleAvatar(child: Icon(Icons.map_rounded)),
-                      title: Text(images[i].repoTags?[0] ?? "RepoTags"),
+                      title: Text(images[i].repoTags?[0] ?? "<none>"),
                       subtitle: Text(formatDate(
                         DateTime.fromMillisecondsSinceEpoch(
                             (images[i].created ?? 0) * 1000),
