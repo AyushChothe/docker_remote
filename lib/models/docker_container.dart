@@ -40,27 +40,40 @@ class DockerContainer {
       this.mounts,
       this.dio});
 
-  Future<void> start() async {
+  Future<String> start() async {
     try {
       await dio?.post("/containers/$id/start");
+      return "Container started";
+    } on DioError catch (e) {
+      return e.response?.data is Map
+          ? (e.response?.data["message"])
+          : "Container already started";
     } catch (e) {
-      debugPrint(e.toString());
+      return "Something went wrong";
     }
   }
 
-  Future<void> stop() async {
+  Future<String> stop() async {
     try {
       await dio?.post("/containers/$id/stop");
+      return "Container stopped";
+    } on DioError catch (e) {
+      return e.response?.data is Map
+          ? (e.response?.data["message"])
+          : "Container already stopped";
     } catch (e) {
-      debugPrint(e.toString());
+      return "Something went wrong";
     }
   }
 
-  Future<void> restart() async {
+  Future<String> restart() async {
     try {
       await dio?.post("/containers/$id/restart");
+      return "Container restarted";
+    } on DioError catch (e) {
+      return (e.response?.data["message"]);
     } catch (e) {
-      debugPrint(e.toString());
+      return "Something went wrong";
     }
   }
 

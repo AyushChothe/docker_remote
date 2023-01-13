@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 class DockerImage {
   String? id;
   String? parentId;
@@ -9,6 +11,7 @@ class DockerImage {
   int? virtualSize;
   Map<String, dynamic>? labels;
   int? containers;
+  Dio? dio;
 
   DockerImage(
       {this.id,
@@ -20,9 +23,22 @@ class DockerImage {
       this.sharedSize,
       this.virtualSize,
       this.labels,
-      this.containers});
+      this.containers,
+      this.dio});
 
-  DockerImage.fromJson(Map<String, dynamic> json) {
+  Future<String> deleteImage() async {
+    try {
+      await dio?.delete("/images/$id");
+      return "Image deleted successfully";
+    } on DioError catch (e) {
+      return (e.response?.data["message"]);
+    } catch (e) {
+      return "Something went wrong";
+    }
+  }
+
+  DockerImage.fromJson(Map<String, dynamic> json, Dio dioProvider) {
+    dio = dioProvider;
     id = json['Id'];
     parentId = json['ParentId'];
     repoTags = json['RepoTags']?.cast<String>();

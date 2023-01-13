@@ -8,7 +8,7 @@ final getImagesProvider = FutureProvider((ref) async {
   final dio = ref.watch(dioProvider);
   Response res = await dio.get('/images/json');
   List<DockerImage> images = (res.data as List<dynamic>)
-      .map((e) => DockerImage.fromJson(e as Map<String, dynamic>))
+      .map((e) => DockerImage.fromJson(e as Map<String, dynamic>, dio))
       .toList();
   return images;
 }, dependencies: [dioProvider]);
