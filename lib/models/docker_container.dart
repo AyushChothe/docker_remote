@@ -77,7 +77,7 @@ class DockerContainer {
     }
   }
 
-  Future<Stream<List<int>>> logs() async {
+  Future<Stream<String>> logs() async {
     try {
       final res = (((await dio?.get(
         "/containers/$id/logs",
@@ -94,7 +94,8 @@ class DockerContainer {
       ))
                   ?.data as ResponseBody)
               .stream)
-          .transform(AggregationTransformer());
+          .transform(AggregationTransformer())
+          .map(String.fromCharCodes);
       return res;
     } catch (e) {
       debugPrint(e.toString());
@@ -195,13 +196,15 @@ class DockerContainer {
 class Ports {
   int? privatePort;
   int? publicPort;
+  String? ip;
   String? type;
 
-  Ports({this.privatePort, this.publicPort, this.type});
+  Ports({this.privatePort, this.publicPort, this.type, this.ip});
 
   Ports.fromJson(Map<String, dynamic> json) {
     privatePort = json['PrivatePort'];
     publicPort = json['PublicPort'];
+    ip = json['IP'];
     type = json['Type'];
   }
 
@@ -210,6 +213,7 @@ class Ports {
     data['PrivatePort'] = privatePort;
     data['PublicPort'] = publicPort;
     data['Type'] = type;
+    data['IP'] = ip;
     return data;
   }
 }

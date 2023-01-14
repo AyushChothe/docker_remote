@@ -10,6 +10,9 @@ final getImagesProvider = FutureProvider((ref) async {
   List<DockerImage> images = (res.data as List<dynamic>)
       .map((e) => DockerImage.fromJson(e as Map<String, dynamic>, dio))
       .toList();
+  images.sort(
+    (a, b) => b.created?.compareTo(a.created!) ?? 0,
+  );
   return images;
 }, dependencies: [dioProvider]);
 
@@ -20,8 +23,9 @@ final getContainersProvider = FutureProvider((ref) async {
   List<DockerContainer> containers = (res.data as List<dynamic>)
       .map((e) => DockerContainer.fromJson(e as Map<String, dynamic>, dio))
       .toList();
+  containers.sort((a, b) => b.status?.compareTo(a.status!) ?? 0);
   return containers;
 }, dependencies: [dioProvider]);
 
 final getLogs = FutureProvider.autoDispose.family((ref, DockerContainer? arg) =>
-    arg?.logs() ?? Future.value(const Stream<List<int>>.empty()));
+    arg?.logs() ?? Future.value(const Stream<String>.empty()));

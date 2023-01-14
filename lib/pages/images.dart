@@ -23,7 +23,7 @@ class ImagesPage extends HookConsumerWidget {
                   ? Center(
                       child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("${images.length} Images"),
+                      child: Text("${images.length} Image(s)"),
                     ))
                   : Card(
                       child: Column(
@@ -54,7 +54,7 @@ class ImagesPage extends HookConsumerWidget {
                                   return ref.refresh(getImagesProvider.future);
                                 },
                                 icon: const Icon(Icons.delete_outline_rounded),
-                                label: const Text("Delete"),
+                                label: const Text("Remove"),
                               )
                             ],
                           )
