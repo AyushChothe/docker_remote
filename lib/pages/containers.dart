@@ -24,7 +24,7 @@ class ContainersPage extends HookConsumerWidget {
                   ? Center(
                       child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("${containers.length} Containers"),
+                      child: Text("${containers.length} Container(s)"),
                     ))
                   : Card(
                       child: Column(
@@ -115,12 +115,14 @@ class ContainersPage extends HookConsumerWidget {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Wrap(
+                                spacing: 5.0,
+                                runSpacing: 5.0,
                                 children: (containers[i]
                                         .ports
                                         ?.map(
                                           (port) => Chip(
                                             label: Text(
-                                                "${port.privatePort}:${port.publicPort}/${port.type}"),
+                                                "${port.ip}:${port.publicPort}→${port.privatePort}/${port.type}"),
                                           ),
                                         )
                                         .toList() ??

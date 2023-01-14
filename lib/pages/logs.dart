@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:docker_remote/providers/container.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:flutter/material.dart';
@@ -31,8 +29,7 @@ class LogsPage extends HookConsumerWidget {
                 stream: logStream,
                 builder: (context, snap) {
                   if (snap.hasData) {
-                    final logs = utf8
-                        .decode(snap.data!)
+                    final logs = snap.data!
                         .split("\n")
                         .reversed
                         .where((e) => e.trim().isNotEmpty)
@@ -57,9 +54,12 @@ class LogsPage extends HookConsumerWidget {
                               ),
                             ),
                     );
-                  } else {
-                    return const Text("Logs");
+                  } else if (snap.hasError) {
+                    return const Text("Something went wrong");
                   }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 },
               );
             },

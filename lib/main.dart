@@ -1,11 +1,20 @@
-import 'package:docker_remote/pages/home.dart';
+import 'package:docker_remote/isar/server.dart';
+import 'package:docker_remote/pages/servers.dart';
+import 'package:docker_remote/providers/db.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:isar/isar.dart';
 
 // flutter run -d chrome --web-browser-flag "--disable-web-security"
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final isar = await Isar.open([ServerSchema]);
+
+  runApp(ProviderScope(
+      overrides: [isarProvider.overrideWith((ref) => isar)],
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,10 +31,10 @@ class MyApp extends StatelessWidget {
         subThemesData: const FlexSubThemesData(
           blendOnLevel: 10,
           blendOnColors: false,
+          cardElevation: 0.5,
         ),
         visualDensity: FlexColorScheme.comfortablePlatformDensity,
-        // To use the playground font, add GoogleFonts package and uncomment
-        // fontFamily: GoogleFonts.notoSans().fontFamily,
+        fontFamily: GoogleFonts.notoSans().fontFamily,
       ),
       darkTheme: FlexThemeData.dark(
         scheme: FlexScheme.bahamaBlue,
@@ -33,12 +42,12 @@ class MyApp extends StatelessWidget {
         blendLevel: 15,
         subThemesData: const FlexSubThemesData(
           blendOnLevel: 20,
+          cardElevation: 0.5,
         ),
         visualDensity: FlexColorScheme.comfortablePlatformDensity,
-        // To use the Playground font, add GoogleFonts package and uncomment
-        // fontFamily: GoogleFonts.notoSans().fontFamily,
+        fontFamily: GoogleFonts.notoSans().fontFamily,
       ),
-      home: const HomePage(),
+      home: const ServersPage(),
       debugShowCheckedModeBanner: false,
     );
   }
