@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:docker_remote/isar/server.dart';
 import 'package:docker_remote/providers/db.dart';
 import 'package:docker_remote/providers/hosts.dart';
@@ -16,7 +17,7 @@ class AddHostPage extends HookConsumerWidget {
     final port = useTextEditingController(text: "2375");
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Servers")),
+      appBar: AppBar(title: const Text("Add Server")),
       body: Center(
         child: Form(
           child: Padding(
@@ -102,15 +103,48 @@ class AddHostPage extends HookConsumerWidget {
               const SizedBox(
                 height: 10,
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  await isar?.writeTxn(() => isar.servers.put(Server()
-                    ..name = name.text
-                    ..host = host.text
-                    ..port = port.text));
-                  Navigator.pop(context);
-                },
-                child: const Text("Save"),
+              ButtonBar(
+                alignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      try {
+                        final dio = Dio(
+                          BaseOptions(
+                            baseUrl: "http://${host.text}:${port.text}",
+                          ),
+                        );
+
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Connecting"),
+                          duration: Duration(seconds: 1),
+                        ));
+                        await dio.get('/version');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Connection Successful")));
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Failed to connect to Server")));
+                      }
+                    },
+                    icon: const Icon(Icons.backup_rounded),
+                    label: const Text("Test"),
+                  ),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.cloud_done_rounded),
+                    label: const Text("Save"),
+                    onPressed: () async {
+                      await isar?.writeTxn(() => isar.servers.put(Server()
+                        ..name = name.text
+                        ..host = host.text
+                        ..port = port.text));
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               )
             ]),
           ),

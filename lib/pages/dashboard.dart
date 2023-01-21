@@ -9,6 +9,9 @@ class DashboardPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final getImages = ref.watch(getImagesProvider);
+    final getContainers = ref.watch(getContainersProvider);
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -22,16 +25,26 @@ class DashboardPage extends HookConsumerWidget {
                 },
                 icon: const Icon(Icons.refresh_rounded))
           ],
-          bottom: const TabBar(tabs: [
-            Tab(
-              child: Text("Images"),
-            ),
-            Tab(
-              child: Text("Containers"),
-            )
-          ]),
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                child: getImages.maybeWhen(
+                    data: (images) => Text("Images (${images.length})"),
+                    orElse: (() => const Text("Images"))),
+              ),
+              Tab(
+                child: getContainers.maybeWhen(
+                    data: (containers) =>
+                        Text("Containers (${containers.length})"),
+                    orElse: (() => const Text("Containers"))),
+              ),
+            ],
+          ),
         ),
-        body: const TabBarView(children: [ImagesPage(), ContainersPage()]),
+        body: const TabBarView(children: [
+          ImagesPage(),
+          ContainersPage(),
+        ]),
       ),
     );
   }

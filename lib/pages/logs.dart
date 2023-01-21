@@ -2,6 +2,7 @@ import 'package:docker_remote/providers/container.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:xterm/xterm.dart';
 
 class LogsPage extends HookConsumerWidget {
   const LogsPage({super.key});
@@ -29,37 +30,19 @@ class LogsPage extends HookConsumerWidget {
                 stream: logStream,
                 builder: (context, snap) {
                   if (snap.hasData) {
-                    final logs = snap.data!
-                        .split("\n")
-                        .reversed
-                        .where((e) => e.trim().isNotEmpty)
-                        .toList();
-                    return ListView.builder(
-                      itemCount: logs.length,
-                      itemBuilder: (context, i) => i == 0
-                          ? const LinearProgressIndicator()
-                          : Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4.0,
-                                vertical: 2.0,
-                              ),
-                              child: ListTile(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                subtitle: Text("Line ${logs.length - i}"),
-                                tileColor: Theme.of(context).primaryColorDark,
-                                title: Text(logs[i - 1]),
-                                dense: true,
-                              ),
-                            ),
+                    return Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: TerminalView(
+                        Terminal()..write(snap.data ?? ""),
+                        theme: TerminalThemes.whiteOnBlack,
+                        readOnly: true,
+                        cursorType: TerminalCursorType.underline,
+                      ),
                     );
                   } else if (snap.hasError) {
                     return const Text("Something went wrong");
                   }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const CircularProgressIndicator();
                 },
               );
             },
