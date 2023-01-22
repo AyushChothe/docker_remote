@@ -12,7 +12,6 @@ class ServersPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dio = ref.watch(dioProvider);
     final isar = ref.watch(isarProvider);
     final servers = ref.watch(getServersProvider);
     return Scaffold(
@@ -46,13 +45,14 @@ class ServersPage extends HookConsumerWidget {
                                 content: Text("Connecting"),
                                 duration: Duration(seconds: 1),
                               ));
-                              await dio.get('/version');
+                              // await dio.get('/version');
 
                               Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (_) => ProviderScope(
                                     overrides: [
-                                      dioProvider.overrideWithValue(dio)
+                                      baseUrlProvider.overrideWithValue(
+                                          "https://${servers[i].host}:${servers[i].port}")
                                     ],
                                     child: const DashboardPage(),
                                   ),
@@ -71,7 +71,7 @@ class ServersPage extends HookConsumerWidget {
                           subtitle:
                               Text("${servers[i].host}:${servers[i].port}"),
                           trailing: FutureBuilder(
-                            future: dio.get(
+                            future: Dio().get(
                                 "http://${servers[i].host}:${servers[i].port}/version"),
                             builder: (context, snap) {
                               if (snap.hasError) {

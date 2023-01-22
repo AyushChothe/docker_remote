@@ -11,7 +11,6 @@ class DashboardPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final getImages = ref.watch(getImagesProvider);
     final getContainers = ref.watch(getContainersProvider);
-
     return DefaultTabController(
       length: 2,
       child: Scaffold(

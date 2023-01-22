@@ -1,4 +1,5 @@
 import 'package:date_format/date_format.dart';
+import 'package:docker_remote/providers/dio.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:docker_remote/utils/utils.dart';
 import 'package:filesize/filesize.dart';
@@ -11,6 +12,7 @@ class ImagesPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final baseUrl = ref.watch(baseUrlProvider);
     final getImages = ref.watch(getImagesProvider);
     final crossAxisCount =
         (MediaQuery.of(context).size.width / 400).floor().clamp(1, 2);

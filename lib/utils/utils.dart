@@ -25,7 +25,6 @@ Future<void> processAPICall(BuildContext context, Future Function() func,
     final processing = messenger.showSnackBar(
       const SnackBar(
         content: Text("Processing"),
-        duration: Duration(minutes: 1),
       ),
     );
 
