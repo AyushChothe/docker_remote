@@ -29,7 +29,11 @@ Future<void> processAPICall(BuildContext context, Future Function() func,
     );
 
     final msg = await func();
-    processing.close();
+    try {
+      processing.close();
+    } catch (e) {
+      debugPrint("SnackBar Closed");
+    }
 
     messenger.showSnackBar(
       SnackBar(

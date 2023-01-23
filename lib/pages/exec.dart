@@ -2,6 +2,7 @@ import 'package:docker_remote/providers/container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:xterm/xterm.dart';
 
 class ExecPage extends HookConsumerWidget {
   const ExecPage({super.key});
@@ -30,9 +31,14 @@ class ExecPage extends HookConsumerWidget {
             TextFormField(
               controller: cmdCtrl,
               decoration: const InputDecoration(hintText: "Command"),
-              onFieldSubmitted: ((_) => container
-                  ?.exec(cmdCtrl.text)
-                  .then((out) => output.value = out)),
+              onFieldSubmitted: ((_) async {
+                try {
+                  final out = await container?.exec(cmdCtrl.text);
+                  output.value = out ?? "";
+                } catch (e) {
+                  debugPrint(e.toString());
+                }
+              }),
             ),
             const SizedBox(
               height: 10,
@@ -43,7 +49,13 @@ class ExecPage extends HookConsumerWidget {
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(child: Text(output.value)),
+                    child: TerminalView(
+                      Terminal()..write(output.value.replaceAll("\n", "\n\r")),
+                      backgroundOpacity: 0,
+                      theme: TerminalThemes.whiteOnBlack,
+                      readOnly: true,
+                      cursorType: TerminalCursorType.underline,
+                    ),
                   ),
                 ),
               ),

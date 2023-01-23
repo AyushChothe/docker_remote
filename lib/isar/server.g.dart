@@ -17,20 +17,35 @@ const ServerSchema = CollectionSchema(
   name: r'Server',
   id: -6947657830638655508,
   properties: {
-    r'host': PropertySchema(
+    r'caCert': PropertySchema(
       id: 0,
+      name: r'caCert',
+      type: IsarType.longList,
+    ),
+    r'clientCert': PropertySchema(
+      id: 1,
+      name: r'clientCert',
+      type: IsarType.longList,
+    ),
+    r'host': PropertySchema(
+      id: 2,
       name: r'host',
       type: IsarType.string,
     ),
     r'name': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'port': PropertySchema(
-      id: 2,
+      id: 4,
       name: r'port',
       type: IsarType.string,
+    ),
+    r'privateKey': PropertySchema(
+      id: 5,
+      name: r'privateKey',
+      type: IsarType.longList,
     )
   },
   estimateSize: _serverEstimateSize,
@@ -93,6 +108,8 @@ int _serverEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.caCert.length * 8;
+  bytesCount += 3 + object.clientCert.length * 8;
   {
     final value = object.host;
     if (value != null) {
@@ -111,6 +128,7 @@ int _serverEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.privateKey.length * 8;
   return bytesCount;
 }
 
@@ -120,9 +138,12 @@ void _serverSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.host);
-  writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.port);
+  writer.writeLongList(offsets[0], object.caCert);
+  writer.writeLongList(offsets[1], object.clientCert);
+  writer.writeString(offsets[2], object.host);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.port);
+  writer.writeLongList(offsets[5], object.privateKey);
 }
 
 Server _serverDeserialize(
@@ -132,10 +153,13 @@ Server _serverDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Server();
-  object.host = reader.readStringOrNull(offsets[0]);
+  object.caCert = reader.readLongList(offsets[0]) ?? [];
+  object.clientCert = reader.readLongList(offsets[1]) ?? [];
+  object.host = reader.readStringOrNull(offsets[2]);
   object.id = id;
-  object.name = reader.readStringOrNull(offsets[1]);
-  object.port = reader.readStringOrNull(offsets[2]);
+  object.name = reader.readStringOrNull(offsets[3]);
+  object.port = reader.readStringOrNull(offsets[4]);
+  object.privateKey = reader.readLongList(offsets[5]) ?? [];
   return object;
 }
 
@@ -147,11 +171,17 @@ P _serverDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongList(offset) ?? []) as P;
     case 1:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongList(offset) ?? []) as P;
     case 2:
       return (reader.readStringOrNull(offset)) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
+      return (reader.readStringOrNull(offset)) as P;
+    case 5:
+      return (reader.readLongList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -731,6 +761,282 @@ extension ServerQueryWhere on QueryBuilder<Server, Server, QWhereClause> {
 }
 
 extension ServerQueryFilter on QueryBuilder<Server, Server, QFilterCondition> {
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertElementEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'caCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'caCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'caCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'caCert',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> caCertLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'caCert',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertElementEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'clientCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition>
+      clientCertElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'clientCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'clientCert',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'clientCert',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition>
+      clientCertLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> clientCertLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'clientCert',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Server, Server, QAfterFilterCondition> hostIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -1217,6 +1523,145 @@ extension ServerQueryFilter on QueryBuilder<Server, Server, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyElementEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'privateKey',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition>
+      privateKeyElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'privateKey',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'privateKey',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'privateKey',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition>
+      privateKeyLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> privateKeyLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'privateKey',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
 }
 
 extension ServerQueryObject on QueryBuilder<Server, Server, QFilterCondition> {}
@@ -1312,6 +1757,18 @@ extension ServerQuerySortThenBy on QueryBuilder<Server, Server, QSortThenBy> {
 }
 
 extension ServerQueryWhereDistinct on QueryBuilder<Server, Server, QDistinct> {
+  QueryBuilder<Server, Server, QDistinct> distinctByCaCert() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'caCert');
+    });
+  }
+
+  QueryBuilder<Server, Server, QDistinct> distinctByClientCert() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'clientCert');
+    });
+  }
+
   QueryBuilder<Server, Server, QDistinct> distinctByHost(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1332,12 +1789,30 @@ extension ServerQueryWhereDistinct on QueryBuilder<Server, Server, QDistinct> {
       return query.addDistinctBy(r'port', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<Server, Server, QDistinct> distinctByPrivateKey() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'privateKey');
+    });
+  }
 }
 
 extension ServerQueryProperty on QueryBuilder<Server, Server, QQueryProperty> {
   QueryBuilder<Server, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Server, List<int>, QQueryOperations> caCertProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'caCert');
+    });
+  }
+
+  QueryBuilder<Server, List<int>, QQueryOperations> clientCertProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'clientCert');
     });
   }
 
@@ -1356,6 +1831,12 @@ extension ServerQueryProperty on QueryBuilder<Server, Server, QQueryProperty> {
   QueryBuilder<Server, String?, QQueryOperations> portProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'port');
+    });
+  }
+
+  QueryBuilder<Server, List<int>, QQueryOperations> privateKeyProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'privateKey');
     });
   }
 }

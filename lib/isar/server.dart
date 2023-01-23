@@ -8,4 +8,6 @@ class Server {
 
   @Index(type: IndexType.value)
   String? name, host, port;
+
+  List<int> caCert = <int>[], clientCert = <int>[], privateKey = <int>[];
 }

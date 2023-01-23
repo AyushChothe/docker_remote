@@ -32,11 +32,19 @@ class LogsPage extends HookConsumerWidget {
                   if (snap.hasData) {
                     return Padding(
                       padding: const EdgeInsets.all(4.0),
-                      child: TerminalView(
-                        Terminal()..write(snap.data ?? ""),
-                        theme: TerminalThemes.whiteOnBlack,
-                        readOnly: true,
-                        cursorType: TerminalCursorType.underline,
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TerminalView(
+                            Terminal()
+                              ..write(
+                                  snap.data?.replaceAll("\n", "\n\r") ?? ""),
+                            backgroundOpacity: 0,
+                            theme: TerminalThemes.whiteOnBlack,
+                            readOnly: true,
+                            cursorType: TerminalCursorType.underline,
+                          ),
+                        ),
                       ),
                     );
                   } else if (snap.hasError) {

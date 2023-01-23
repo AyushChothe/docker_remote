@@ -67,7 +67,8 @@ class ContainersPage extends HookConsumerWidget {
                           OutlinedButton.icon(
                               onPressed: () async {
                                 await processAPICall(
-                                    context, () => containers[i].stop());
+                                    context, () => containers[i].stop(),
+                                    confirmation: true);
                                 return ref
                                     .refresh(getContainersProvider.future);
                               },
@@ -76,7 +77,8 @@ class ContainersPage extends HookConsumerWidget {
                           OutlinedButton.icon(
                               onPressed: () async {
                                 await processAPICall(
-                                    context, () => containers[i].restart());
+                                    context, () => containers[i].restart(),
+                                    confirmation: true);
                                 return ref
                                     .refresh(getContainersProvider.future);
                               },
