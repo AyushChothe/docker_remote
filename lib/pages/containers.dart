@@ -53,7 +53,8 @@ class ContainersPage extends HookConsumerWidget {
                     ButtonBar(
                       alignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        if (containers[i].state?.toUpperCase() != "RUNNING")
+                        if (containers[i].state?.toUpperCase() !=
+                            "RUNNING") ...[
                           OutlinedButton.icon(
                               onPressed: () async {
                                 await processAPICall(
@@ -62,8 +63,18 @@ class ContainersPage extends HookConsumerWidget {
                                     .refresh(getContainersProvider.future);
                               },
                               icon: const Icon(Icons.play_arrow_outlined),
-                              label: const Text("Start"))
-                        else ...[
+                              label: const Text("Start")),
+                          OutlinedButton.icon(
+                              onPressed: () async {
+                                await processAPICall(
+                                    context, () => containers[i].remove(),
+                                    confirmation: true);
+                                return ref
+                                    .refresh(getContainersProvider.future);
+                              },
+                              icon: const Icon(Icons.delete_outline_rounded),
+                              label: const Text("Remove"))
+                        ] else ...[
                           OutlinedButton.icon(
                               onPressed: () async {
                                 await processAPICall(

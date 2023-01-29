@@ -77,6 +77,17 @@ class DockerContainer {
     }
   }
 
+  Future<String> remove() async {
+    try {
+      await dio?.delete("/containers/$id");
+      return "Container removed";
+    } on DioError catch (e) {
+      return (e.response?.data["message"]);
+    } catch (e) {
+      return "Something went wrong";
+    }
+  }
+
   Future<Stream<String>> logs() async {
     try {
       final res = (((await dio?.get(

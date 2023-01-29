@@ -26,7 +26,24 @@ class ServersPage extends HookConsumerWidget {
                   onRefresh: () => ref.refresh(getServersProvider.future),
                   child: ListView.builder(
                     itemCount: servers.length,
-                    itemBuilder: (context, i) => ServerTile(server: servers[i]),
+                    itemBuilder: (context, i) {
+                      final server = servers[i];
+                      return ProviderScope(overrides: [
+                        if (server.caCert.isNotEmpty &&
+                            server.clientCert.isNotEmpty &&
+                            server.privateKey.isNotEmpty) ...[
+                          baseUrlProvider.overrideWithValue(
+                              "https://${server.host}:${server.port}"),
+                          certProvider.overrideWith((ref) => {
+                                "rootCACertificate": server.caCert,
+                                "clientCertificate": server.clientCert,
+                                "privateKey": server.privateKey,
+                              })
+                        ] else
+                          baseUrlProvider.overrideWithValue(
+                              "http://${server.host}:${server.port}"),
+                      ], child: ServerTile(server: server));
+                    },
                   ),
                 ),
               ),
@@ -44,7 +61,7 @@ class ServersPage extends HookConsumerWidget {
   }
 }
 
-class ServerTile extends StatelessWidget {
+class ServerTile extends HookConsumerWidget {
   const ServerTile({
     Key? key,
     required this.server,
@@ -53,101 +70,100 @@ class ServerTile extends StatelessWidget {
   final Server server;
 
   @override
-  Widget build(BuildContext context) {
-    final overrides = [
-      if (server.caCert.isNotEmpty &&
-          server.clientCert.isNotEmpty &&
-          server.privateKey.isNotEmpty) ...[
-        baseUrlProvider
-            .overrideWithValue("https://${server.host}:${server.port}"),
-        certProvider.overrideWith((ref) => {
-              "rootCACertificate": server.caCert,
-              "clientCertificate": server.clientCert,
-              "privateKey": server.privateKey,
-            })
-      ] else
-        baseUrlProvider
-            .overrideWithValue("http://${server.host}:${server.port}"),
-    ];
-    return ProviderScope(
-      overrides: overrides,
-      child: Consumer(builder: (context, ref, __) {
-        final isar = ref.watch(isarProvider);
-        final getVersion = ref.watch(getVersionProvider.future);
-        return Card(
-          child: ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.cloud_rounded)),
-              onTap: () async {
-                try {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Connecting"),
-                    duration: Duration(seconds: 1),
-                  ));
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isar = ref.watch(isarProvider);
+    final baseUrl = ref.watch(baseUrlProvider);
+    final isHttps = baseUrl.startsWith("https://");
+    final getVersion = ref.watch(getVersionProvider.future);
+    return Card(
+      child: ListTile(
+        leading: const CircleAvatar(child: Icon(Icons.cloud_rounded)),
+        onTap: () async {
+          try {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Connecting"),
+              duration: Duration(seconds: 1),
+            ));
 
-                  await getVersion;
+            final nav = Navigator.of(context);
+            await getVersion;
 
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => ProviderScope(
-                          overrides: overrides, child: const DashboardPage()),
-                    ),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Failed to connect to Server")));
-                }
-              },
-              onLongPress: () async {
-                final perform = (await showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: const Text("Are you sure?"),
-                    actions: [
-                      ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(false),
-                          child: const Text("No")),
-                      OutlinedButton(
-                          onPressed: () => Navigator.of(context).pop(true),
-                          child: const Text("Yes"))
-                    ],
-                  ),
-                ));
-                if (perform == true) {
-                  isar?.writeTxn(() => isar.servers.delete(server.id));
-                }
-              },
-              title: Text(server.name ?? "Name"),
-              subtitle: Text("${server.host}:${server.port}"),
-              trailing: FutureBuilder(
-                future: getVersion,
-                builder: (context, snap) {
-                  if (snap.hasError) {
-                    return const CircleAvatar(
-                      maxRadius: 6,
-                      backgroundColor: Colors.redAccent,
-                    );
-                  } else if (snap.hasData) {
-                    return Chip(
-                      labelPadding: EdgeInsets.zero,
-                      avatar: const CircleAvatar(
-                        maxRadius: 6,
-                        backgroundColor: Colors.greenAccent,
-                      ),
-                      label: Text(
-                        "v${snap.data?.data["Version"]}",
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    );
-                  } else {
-                    return const CircleAvatar(
-                      maxRadius: 6,
-                      backgroundColor: Colors.grey,
-                    );
-                  }
-                },
-              )),
-        );
-      }),
+            nav.push(
+              MaterialPageRoute(
+                builder: (_) => ProviderScope(
+                    parent: ProviderScope.containerOf(context),
+                    child: const DashboardPage()),
+              ),
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Failed to connect to Server")));
+          }
+        },
+        onLongPress: () async {
+          final perform = (await showDialog(
+            context: context,
+            builder: (_) => AlertDialog(
+              title: const Text("Are you sure?"),
+              actions: [
+                ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text("No")),
+                OutlinedButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Yes"))
+              ],
+            ),
+          ));
+          if (perform == true) {
+            isar?.writeTxn(() => isar.servers.delete(server.id));
+          }
+        },
+        title: Text.rich(TextSpan(children: [
+          TextSpan(text: server.name ?? "Name"),
+          const WidgetSpan(
+              child: SizedBox(
+            width: 4,
+          )),
+          WidgetSpan(
+            child: Icon(
+              isHttps ? Icons.https_rounded : Icons.lock_open_rounded,
+              size: 15,
+              color: isHttps ? Colors.greenAccent : Colors.redAccent,
+            ),
+            alignment: PlaceholderAlignment.middle,
+          )
+        ])),
+        subtitle: Text("${server.host}:${server.port}"),
+        trailing: FutureBuilder(
+          future: getVersion,
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const CircleAvatar(
+                maxRadius: 6,
+                backgroundColor: Colors.grey,
+              );
+            } else if (snap.hasData) {
+              return Chip(
+                labelPadding: EdgeInsets.zero,
+                avatar: const CircleAvatar(
+                  maxRadius: 6,
+                  backgroundColor: Colors.greenAccent,
+                ),
+                label: Text(
+                  "v${snap.data?.data["Version"]}",
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              );
+            } else {
+              return const CircleAvatar(
+                maxRadius: 6,
+                backgroundColor: Colors.redAccent,
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 }

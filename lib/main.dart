@@ -1,4 +1,4 @@
-import 'package:device_preview/device_preview.dart';
+import 'package:device_preview/device_preview.dart' show DevicePreview;
 import 'package:docker_remote/isar/server.dart';
 import 'package:docker_remote/pages/servers.dart';
 import 'package:docker_remote/providers/db.dart';

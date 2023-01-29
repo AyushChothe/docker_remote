@@ -1,3 +1,5 @@
+// ignore_for_file: unused_result
+
 import 'package:docker_remote/pages/containers.dart';
 import 'package:docker_remote/pages/images.dart';
 import 'package:docker_remote/providers/docker_api.dart';

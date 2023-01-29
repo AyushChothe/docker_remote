@@ -277,6 +277,7 @@ class AddHostPage extends HookConsumerWidget {
                     icon: const Icon(Icons.cloud_done_rounded),
                     label: const Text("Save"),
                     onPressed: () async {
+                      final nav = Navigator.of(context);
                       if (useTLS.value == true &&
                           (caCert.value.isEmpty ||
                               clientCert.value.isEmpty ||
@@ -294,7 +295,7 @@ class AddHostPage extends HookConsumerWidget {
                           ..caCert = caCert.value
                           ..clientCert = clientCert.value
                           ..privateKey = privateKey.value));
-                        Navigator.pop(context);
+                        nav.pop();
                       }
                     },
                   ),

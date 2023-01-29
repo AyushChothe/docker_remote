@@ -20,7 +20,7 @@ class ExecPage extends HookConsumerWidget {
           ),
           TextSpan(
             text: " (${container?.names?[0]})",
-            style: Theme.of(context).textTheme.bodyText1,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ])),
       ),
