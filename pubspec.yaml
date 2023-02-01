@@ -19,7 +19,19 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # of the product and file versions while build-number is used as the build suffix.
 version: 0.3.1+6
 
-isar_version: &isar_version 3.0.5
+msix_config:
+  display_name: Docker Remote
+  publisher_display_name: Ayush Chothe
+  publisher: Ayush Chothe
+  identity_name: com.ashtech.docker-remote
+  msix_version: 0.3.1.6
+  logo_path: D:\FlutterProjects\docker_remote\playstore.png
+  languags: en-us
+  capabilities: "internetClient"
+  file_extension: .pem
+  execution_alias: dore
+  certificate_path: D:\FlutterProjects\docker_remote\msix_certificate\AshTech.pfx
+  certificate_password: AshTech
 
 environment:
   sdk: ">=2.18.6 <3.0.0"
@@ -46,8 +58,8 @@ dependencies:
   network_info_plus: ^3.0.1
   tcp_scanner: ^2.0.5
   lan_scanner: ^3.5.0
-  isar: *isar_version
-  isar_flutter_libs: *isar_version
+  isar: 3.0.5
+  isar_flutter_libs: 3.0.5
   google_fonts: ^3.0.1
   xterm: ^3.4.0
   flutter_staggered_grid_view: ^0.6.2
@@ -65,8 +77,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  isar_generator: *isar_version
+  isar_generator: 3.0.5
   build_runner: any
+  msix: ^3.7.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -78,8 +91,7 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/
+  # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
