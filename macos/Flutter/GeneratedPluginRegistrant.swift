@@ -5,6 +5,7 @@
 import FlutterMacOS
 import Foundation
 
+import is_wear
 import isar_flutter_libs
 import network_info_plus
 import path_provider_foundation
@@ -12,6 +13,7 @@ import shared_preferences_foundation
 import url_launcher_macos
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  IsWearPlugin.register(with: registry.registrar(forPlugin: "IsWearPlugin"))
   IsarFlutterLibsPlugin.register(with: registry.registrar(forPlugin: "IsarFlutterLibsPlugin"))
   NetworkInfoPlusPlugin.register(with: registry.registrar(forPlugin: "NetworkInfoPlusPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))

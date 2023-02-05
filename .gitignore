@@ -42,3 +42,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+.openvscode*/
+.vscode/
+*.pem
+*.key
+*.crt
+*.csr
+*.pfx
+openssl.cnf
+*.zip
+/*.json

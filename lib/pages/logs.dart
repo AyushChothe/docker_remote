@@ -1,6 +1,7 @@
 import 'package:docker_remote/providers/container.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:xterm/xterm.dart';
 
@@ -41,6 +42,9 @@ class LogsPage extends HookConsumerWidget {
                                   snap.data?.replaceAll("\n", "\n\r") ?? ""),
                             backgroundOpacity: 0,
                             theme: TerminalThemes.whiteOnBlack,
+                            textStyle: TerminalStyle(
+                              fontFamily: GoogleFonts.firaCode().fontFamily!,
+                            ),
                             readOnly: true,
                             cursorType: TerminalCursorType.underline,
                           ),

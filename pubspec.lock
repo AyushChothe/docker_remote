@@ -185,14 +185,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  cupertino_icons:
-    dependency: "direct main"
-    description:
-      name: cupertino_icons
-      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   dart_ping:
     dependency: transitive
     description:
@@ -425,10 +417,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_fonts
-      sha256: "8f099045e2f2a30e4d4d0a35f40c6bc941a8f2ca0e10ad9d214ee9edd3f37483"
+      sha256: "148c716f5929371d335d29c2952119b34842b1a8e5607e37bb9f68f96e88068a"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.1"
+    version: "4.0.1"
   graphs:
     dependency: transitive
     description:
@@ -493,6 +485,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  is_wear:
+    dependency: "direct main"
+    description:
+      name: is_wear
+      sha256: c0c8b777ad159e08a77ae9cda011d1066bac28829c85cdec314b579a3aafba4a
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.1+2"
   isar:
     dependency: "direct main"
     description:
@@ -1042,6 +1042,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  watch_connectivity:
+    dependency: "direct main"
+    description:
+      name: watch_connectivity
+      sha256: "3dacb8d3ea04b8d7cd45e2b6d3d9be95478c8d5b849c8a50c0435c81dc2f605a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
+  watch_connectivity_platform_interface:
+    dependency: transitive
+    description:
+      name: watch_connectivity_platform_interface
+      sha256: c03b17267c7829f047b4b16476304b08082e4e94320e44af031e6f4c0c7e5e40
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   watcher:
     dependency: transitive
     description:

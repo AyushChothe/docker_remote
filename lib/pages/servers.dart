@@ -1,9 +1,11 @@
 import 'package:docker_remote/isar/server.dart';
+import 'package:docker_remote/models/docker_certs.dart';
 import 'package:docker_remote/pages/add_host.dart';
 import 'package:docker_remote/pages/dashboard.dart';
 import 'package:docker_remote/providers/db.dart';
 import 'package:docker_remote/providers/dio.dart';
 import 'package:docker_remote/providers/docker_api.dart';
+import 'package:docker_remote/providers/watch_connection.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -31,17 +33,17 @@ class ServersPage extends HookConsumerWidget {
                       return ProviderScope(overrides: [
                         if (server.caCert.isNotEmpty &&
                             server.clientCert.isNotEmpty &&
-                            server.privateKey.isNotEmpty) ...[
+                            server.privateKey.isNotEmpty)
                           baseUrlProvider.overrideWithValue(
-                              "https://${server.host}:${server.port}"),
-                          certProvider.overrideWith((ref) => {
-                                "rootCACertificate": server.caCert,
-                                "clientCertificate": server.clientCert,
-                                "privateKey": server.privateKey,
-                              })
-                        ] else
+                              "https://${server.host}:${server.port}")
+                        else
                           baseUrlProvider.overrideWithValue(
                               "http://${server.host}:${server.port}"),
+                        certProvider.overrideWithValue(DockerCerts(
+                          rootCACertificate: server.caCert,
+                          clientCertificate: server.clientCert,
+                          privateKey: server.privateKey,
+                        ))
                       ], child: ServerTile(server: server));
                     },
                   ),
@@ -73,8 +75,11 @@ class ServerTile extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isar = ref.watch(isarProvider);
     final baseUrl = ref.watch(baseUrlProvider);
+    final certs = ref.watch(certProvider);
     final isHttps = baseUrl.startsWith("https://");
-    final getVersion = ref.watch(getVersionProvider.future);
+    final getVersion = ref.read(getVersionProvider.future);
+    final watchConn = ref.watch(watchConnProvider);
+
     return Card(
       child: ListTile(
         leading: const CircleAvatar(child: Icon(Icons.cloud_rounded)),
@@ -86,8 +91,14 @@ class ServerTile extends HookConsumerWidget {
             ));
 
             final nav = Navigator.of(context);
+            await watchConn.updateApplicationContext({
+              "name": server.name,
+              "host": server.host,
+              "port": server.port,
+              "baseUrl": baseUrl,
+              "certs": certs.toJson(),
+            });
             await getVersion;
-
             nav.push(
               MaterialPageRoute(
                 builder: (_) => ProviderScope(
