@@ -14,7 +14,7 @@ class WatchDashboardPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final watchConn = ref.watch(watchConnProvider);
     final serverTile = useStream(useMemoized(() => getServerStream(watchConn)));
-
+    debugPrint("WatchDashboardPage Build");
     return Scaffold(body: Center(
       child: Builder(builder: (context) {
         if (serverTile.hasData) {
@@ -59,7 +59,7 @@ class WatchStatus extends HookConsumerWidget {
     final isSupported = useFuture(useMemoized(() => watchConn.isSupported));
     final isPaired = useFuture(useMemoized(() => watchConn.isPaired));
     final isReachable = useFuture(useMemoized(() => watchConn.isReachable));
-    debugPrint("Build");
+    debugPrint("WatchStatus Build");
     return Center(
       child: ((isSupported.data ?? false) &&
               (isPaired.data ?? false) &&

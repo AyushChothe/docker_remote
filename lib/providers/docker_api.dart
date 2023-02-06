@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
+import 'package:docker_remote/models/docker_compose.dart';
 import 'package:docker_remote/models/docker_container.dart';
 import 'package:docker_remote/models/docker_image.dart';
 import 'package:docker_remote/providers/dio.dart';
+import 'package:docker_remote/utils/stream_aggregator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -26,9 +29,37 @@ final getContainersProvider = FutureProvider((ref) async {
   List<DockerContainer> containers = (res.data as List<dynamic>)
       .map((e) => DockerContainer.fromJson(e as Map<String, dynamic>, dio))
       .toList();
+
   containers.sort((a, b) => b.status?.compareTo(a.status!) ?? 0);
   return containers;
 }, dependencies: [dioProvider]);
+
+final getComposeContainersProvider = FutureProvider((ref) async {
+  final containers = await ref.watch(getContainersProvider.future);
+
+  final groups = containers.groupListsBy((cont) => cont.labels
+      ?.putIfAbsent("com.docker.compose.project.config_files", () => ""));
+
+  final List<dynamic> other = groups.remove("") ?? [];
+
+  return (groups.entries
+          .map<dynamic>(
+            (entry) => DockerComposeStack(
+              composeFilePath: entry.key,
+              containers: entry.value,
+              composeProject:
+                  "${entry.value.first.labels?["com.docker.compose.project"]}",
+              composeVersion:
+                  "${entry.value.first.labels?["com.docker.compose.version"]}",
+              composeService:
+                  "${entry.value.first.labels?["com.docker.compose.service"]}",
+              composeWorkingDir:
+                  "${entry.value.first.labels?["com.docker.compose.project.working_dir"]}",
+            ),
+          )
+          .toList()) +
+      other;
+}, dependencies: [getContainersProvider]);
 
 final getLogs = FutureProvider.autoDispose.family((ref, DockerContainer? arg) =>
     arg?.logs() ?? Future.value(const Stream<String>.empty()));
@@ -52,26 +83,9 @@ final pullImage = FutureProvider.family.autoDispose((ref, String image) async {
     ))
                 .data as ResponseBody)
             .stream)
-        .map(String.fromCharCodes)
-        .map((e) {
-      List<String> stats = e.split("\n");
-      List<String> status = [];
-      for (String stat in stats) {
-        try {
-          if (stat.trim().isNotEmpty) {
-            final out = jsonDecode(stat) as Map<String, dynamic>;
-            String str = out["status"];
-            if (out.containsKey("progress")) {
-              str += "\n\r" "${out["progress"]}";
-            }
-            status.add(str);
-          }
-        } catch (e) {
-          debugPrint(e.toString());
-        }
-      }
-      return "${status.join('\n\r')}\n\r";
-    }).asBroadcastStream();
+        .map((bytes) => utf8.decode(bytes, allowMalformed: true))
+        .transform(ConsoleAggregationTransformer())
+        .asBroadcastStream();
     return res;
   } on DioError {
     return Future.error("Something went wrong");

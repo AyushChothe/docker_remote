@@ -18,7 +18,11 @@ class PullImagePage extends HookConsumerWidget {
           data: (stream) {
             final Terminal term = Terminal();
             stream.listen(
-              (event) => term.write(event),
+              (event) {
+                term.eraseDisplay();
+                term.setCursor(0, 0);
+                term.write(event);
+              },
               onDone: () => ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text("Process Done"),

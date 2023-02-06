@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:docker_remote/utils/stream_aggregator.dart';
@@ -106,7 +107,7 @@ class DockerContainer {
                   ?.data as ResponseBody)
               .stream)
           .transform(AggregationTransformer())
-          .map(String.fromCharCodes);
+          .map((bytes) => utf8.decode(bytes, allowMalformed: true));
       return res;
     } catch (e) {
       debugPrint(e.toString());
@@ -130,10 +131,8 @@ class DockerContainer {
       ))
           ?.data["Id"];
       String response = (await dio?.post("/exec/$execId/start",
-                  data: {"Detach": detach, "Tty": false}))
-              ?.data
-              .toString() ??
-          "";
+              data: {"Detach": detach, "Tty": true}))
+          ?.data;
       return response;
     } catch (e) {
       debugPrint(e.toString());

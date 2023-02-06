@@ -23,6 +23,7 @@ class DashboardPage extends HookConsumerWidget {
                 onPressed: () {
                   ref.refresh(getImagesProvider.future);
                   ref.refresh(getContainersProvider.future);
+                  ref.refresh(getComposeContainersProvider.future);
                 },
                 icon: const Icon(Icons.refresh_rounded))
           ],
