@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+import '../watch_pages/watch_images.dart';
+
 class WatchServerTile extends HookConsumerWidget {
   const WatchServerTile({
     Key? key,
@@ -39,7 +41,16 @@ class WatchServerTile extends HookConsumerWidget {
         children: [
           Card(
             child: ListTile(
-              onTap: () async {},
+              onTap: () async {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => ProviderScope(
+                      parent: ProviderScope.containerOf(context),
+                      child: const WatchContainerView(),
+                    ),
+                  ),
+                );
+              },
               title: Text.rich(TextSpan(children: [
                 TextSpan(text: server.name ?? "Name"),
                 const WidgetSpan(

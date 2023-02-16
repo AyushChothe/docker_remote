@@ -68,6 +68,7 @@ dependencies:
   url_launcher: ^6.1.8
   is_wear: 0.0.1+2
   watch_connectivity: ^0.1.4
+  collection: ^1.17.0
 
 dev_dependencies:
   flutter_test:
