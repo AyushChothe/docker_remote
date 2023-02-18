@@ -1,3 +1,4 @@
+import 'package:dartssh2/dartssh2.dart';
 import 'package:docker_remote/models/docker_certs.dart';
 import 'package:docker_remote/pages/add_host.dart';
 import 'package:docker_remote/providers/db.dart';
@@ -40,7 +41,21 @@ class ServersPage extends HookConsumerWidget {
                           rootCACertificate: server.caCert,
                           clientCertificate: server.clientCert,
                           privateKey: server.privateKey,
-                        ))
+                        )),
+                        if (server.sshUsername != null &&
+                            server.sshPassword != null &&
+                            server.sshPort != null)
+                          sshClientProvider.overrideWith(
+                            (ref) async => SSHClient(
+                              await SSHSocket.connect(
+                                server.host!,
+                                int.parse(server.sshPort!),
+                                timeout: const Duration(seconds: 5),
+                              ),
+                              username: server.sshUsername!,
+                              onPasswordRequest: () => server.sshPassword,
+                            ),
+                          )
                       ], child: ServerTile(server: server));
                     },
                   ),

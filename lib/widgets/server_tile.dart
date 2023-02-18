@@ -37,7 +37,9 @@ class ServerTile extends HookConsumerWidget {
             ));
 
             final nav = Navigator.of(context);
-            if (Platform.isAndroid) {
+            if (Platform.isAndroid &&
+                await watchConn.isSupported &&
+                await watchConn.isPaired) {
               await watchConn.updateApplicationContext({
                 "name": server.name,
                 "host": server.host,

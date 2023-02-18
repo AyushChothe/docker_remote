@@ -9,5 +9,8 @@ class Server {
   @Index(type: IndexType.value)
   String? name, host, port;
 
+  @Index(type: IndexType.value)
+  String? sshUsername, sshPassword, sshPort;
+
   List<int> caCert = <int>[], clientCert = <int>[], privateKey = <int>[];
 }

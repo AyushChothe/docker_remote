@@ -8,16 +8,22 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ContainerTile extends HookConsumerWidget {
-  const ContainerTile({
-    super.key,
-    required this.container,
-  });
+  const ContainerTile(
+      {super.key, required this.container, this.isCompose = false});
 
   final DockerContainer container;
+  final bool isCompose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
+      elevation: isCompose ? 1 : null,
+      shape: isCompose
+          ? (Theme.of(context).cardTheme.shape as RoundedRectangleBorder)
+              .copyWith(
+              side: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            )
+          : null,
       child: Column(
         children: [
           ListTile(
@@ -41,59 +47,61 @@ class ContainerTile extends HookConsumerWidget {
               ),
             ),
           ),
-          const Divider(height: 0),
-          ButtonBar(
-            alignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              if (container.state?.toUpperCase() != "RUNNING") ...[
-                OutlinedButton.icon(
-                    onPressed: () async {
-                      await processAPICall(context, () => container.start());
-                      return ref.refresh(getContainersProvider.future);
+          if (!isCompose) ...[
+            const Divider(height: 0),
+            ButtonBar(
+              alignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if (container.state?.toUpperCase() != "RUNNING") ...[
+                  OutlinedButton.icon(
+                      onPressed: () async {
+                        await processAPICall(context, () => container.start());
+                        return ref.refresh(getContainersProvider.future);
+                      },
+                      icon: const Icon(Icons.play_arrow_outlined),
+                      label: const Text("Start")),
+                  OutlinedButton.icon(
+                      onPressed: () async {
+                        await processAPICall(context, () => container.remove(),
+                            confirmation: true);
+                        return ref.refresh(getContainersProvider.future);
+                      },
+                      icon: const Icon(Icons.delete_outline_rounded),
+                      label: const Text("Remove"))
+                ] else ...[
+                  OutlinedButton.icon(
+                      onPressed: () async {
+                        await processAPICall(context, () => container.stop(),
+                            confirmation: true);
+                        return ref.refresh(getContainersProvider.future);
+                      },
+                      icon: const Icon(Icons.stop_outlined),
+                      label: const Text("Stop")),
+                  OutlinedButton.icon(
+                      onPressed: () async {
+                        await processAPICall(context, () => container.restart(),
+                            confirmation: true);
+                        return ref.refresh(getContainersProvider.future);
+                      },
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text("Restart")),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => ProviderScope(overrides: [
+                            containerProvider.overrideWithValue(container)
+                          ], child: const ExecPage()),
+                        ),
+                      );
                     },
-                    icon: const Icon(Icons.play_arrow_outlined),
-                    label: const Text("Start")),
-                OutlinedButton.icon(
-                    onPressed: () async {
-                      await processAPICall(context, () => container.remove(),
-                          confirmation: true);
-                      return ref.refresh(getContainersProvider.future);
-                    },
-                    icon: const Icon(Icons.delete_outline_rounded),
-                    label: const Text("Remove"))
-              ] else ...[
-                OutlinedButton.icon(
-                    onPressed: () async {
-                      await processAPICall(context, () => container.stop(),
-                          confirmation: true);
-                      return ref.refresh(getContainersProvider.future);
-                    },
-                    icon: const Icon(Icons.stop_outlined),
-                    label: const Text("Stop")),
-                OutlinedButton.icon(
-                    onPressed: () async {
-                      await processAPICall(context, () => container.restart(),
-                          confirmation: true);
-                      return ref.refresh(getContainersProvider.future);
-                    },
-                    icon: const Icon(Icons.refresh_rounded),
-                    label: const Text("Restart")),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => ProviderScope(overrides: [
-                          containerProvider.overrideWithValue(container)
-                        ], child: const ExecPage()),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.terminal_rounded),
-                  label: const Text("Exec"),
-                ),
-              ]
-            ],
-          ),
+                    icon: const Icon(Icons.terminal_rounded),
+                    label: const Text("Exec"),
+                  ),
+                ]
+              ],
+            ),
+          ],
           // Port Mappings
           if (container.ports?.isNotEmpty ?? false) ...[
             const Divider(

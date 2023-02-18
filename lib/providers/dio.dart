@@ -1,7 +1,8 @@
 import 'dart:io';
 
-import 'package:dio/adapter.dart';
+import 'package:dartssh2/dartssh2.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:docker_remote/models/docker_certs.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -11,6 +12,9 @@ final baseUrlProvider = Provider((_) => "http://127.0.0.1:2375");
 final certProvider = Provider((ref) {
   return DockerCerts();
 });
+
+final sshClientProvider =
+    FutureProvider<SSHClient?>((ref) => Future.value(null));
 
 final dioProvider = FutureProvider<Dio>((ref) async {
   final baseUrl = ref.watch(baseUrlProvider);
@@ -22,7 +26,7 @@ final dioProvider = FutureProvider<Dio>((ref) async {
       certs.rootCACertificate.isNotEmpty &&
       certs.clientCertificate.isNotEmpty &&
       certs.privateKey.isNotEmpty) {
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
         (client) {
       SecurityContext context = SecurityContext(withTrustedRoots: true);
       context.setTrustedCertificatesBytes(

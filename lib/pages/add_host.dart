@@ -14,13 +14,19 @@ class AddHostPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final formKey = GlobalKey<FormState>();
     final isar = ref.watch(isarProvider);
+
     final name = useTextEditingController(text: "My Server");
     final host = useTextEditingController(text: "127.0.0.1");
     final port = useTextEditingController(text: "2375");
+
     final useTLS = useState(false);
     final caCert = useState(<int>[]);
     final clientCert = useState(<int>[]);
     final privateKey = useState(<int>[]);
+
+    final sshUsername = useTextEditingController(text: "root");
+    final sshPassword = useTextEditingController(text: "root");
+    final sshPort = useTextEditingController(text: "22");
 
     return Scaffold(
       appBar: AppBar(title: const Text("Add Server")),
@@ -124,8 +130,53 @@ class AddHostPage extends HookConsumerWidget {
                     ? "Port is required and must be numeric"
                     : null,
                 decoration: const InputDecoration(
-                  label: Text("Port"),
+                  label: Text("Docker Port"),
                   hintText: "2376",
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              //SSH
+              TextFormField(
+                controller: sshUsername,
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? "Username is required"
+                    : null,
+                decoration: const InputDecoration(
+                  label: Text("SSH Username"),
+                  hintText: "root",
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                controller: sshPassword,
+                validator: (value) => (value == null || value.trim().isEmpty)
+                    ? "Password is required"
+                    : null,
+                decoration: const InputDecoration(
+                  label: Text("SSH Password"),
+                  hintText: "root",
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              TextFormField(
+                controller: sshPort,
+                validator: (value) => (value == null ||
+                        value.trim().isEmpty ||
+                        int.tryParse(value) == null)
+                    ? "Port is required and must be numeric"
+                    : null,
+                decoration: const InputDecoration(
+                  label: Text("SSH Port"),
+                  hintText: "22",
                   alignLabelWithHint: true,
                 ),
               ),
@@ -246,33 +297,6 @@ class AddHostPage extends HookConsumerWidget {
               ButtonBar(
                 alignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // OutlinedButton.icon(
-                  //   onPressed: () async {
-                  //     try {
-                  //       final dio = Dio(
-                  //         BaseOptions(
-                  //           baseUrl: "http://${host.text}:${port.text}",
-                  //         ),
-                  //       );
-
-                  //       ScaffoldMessenger.of(context)
-                  //           .showSnackBar(const SnackBar(
-                  //         content: Text("Connecting"),
-                  //         duration: Duration(seconds: 1),
-                  //       ));
-                  //       await dio.get('/version');
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //           const SnackBar(
-                  //               content: Text("Connection Successful")));
-                  //     } catch (e) {
-                  //       ScaffoldMessenger.of(context).showSnackBar(
-                  //           const SnackBar(
-                  //               content: Text("Failed to connect to Server")));
-                  //     }
-                  //   },
-                  //   icon: const Icon(Icons.backup_rounded),
-                  //   label: const Text("Test"),
-                  // ),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.cloud_done_rounded),
                     label: const Text("Save"),
@@ -288,13 +312,20 @@ class AddHostPage extends HookConsumerWidget {
                         return;
                       }
                       if (formKey.currentState?.validate() ?? false) {
-                        await isar?.writeTxn(() => isar.servers.put(Server()
-                          ..name = name.text
-                          ..host = host.text
-                          ..port = port.text
-                          ..caCert = caCert.value
-                          ..clientCert = clientCert.value
-                          ..privateKey = privateKey.value));
+                        await isar?.writeTxn(() => isar.servers.put(
+                              Server()
+                                ..name = name.text
+                                ..host = host.text
+                                ..port = port.text
+                                // Certificate Details
+                                ..caCert = caCert.value
+                                ..clientCert = clientCert.value
+                                ..privateKey = privateKey.value
+                                // SSH Details
+                                ..sshUsername = sshUsername.text
+                                ..sshPassword = sshPassword.text
+                                ..sshPort = sshPort.text,
+                            ));
                         nav.pop();
                       }
                     },

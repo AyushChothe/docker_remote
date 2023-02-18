@@ -46,6 +46,21 @@ const ServerSchema = CollectionSchema(
       id: 5,
       name: r'privateKey',
       type: IsarType.longList,
+    ),
+    r'sshPassword': PropertySchema(
+      id: 6,
+      name: r'sshPassword',
+      type: IsarType.string,
+    ),
+    r'sshPort': PropertySchema(
+      id: 7,
+      name: r'sshPort',
+      type: IsarType.string,
+    ),
+    r'sshUsername': PropertySchema(
+      id: 8,
+      name: r'sshUsername',
+      type: IsarType.string,
     )
   },
   estimateSize: _serverEstimateSize,
@@ -92,6 +107,45 @@ const ServerSchema = CollectionSchema(
           caseSensitive: true,
         )
       ],
+    ),
+    r'sshUsername': IndexSchema(
+      id: 2656186661577807604,
+      name: r'sshUsername',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'sshUsername',
+          type: IndexType.value,
+          caseSensitive: true,
+        )
+      ],
+    ),
+    r'sshPassword': IndexSchema(
+      id: 1302134463429490852,
+      name: r'sshPassword',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'sshPassword',
+          type: IndexType.value,
+          caseSensitive: true,
+        )
+      ],
+    ),
+    r'sshPort': IndexSchema(
+      id: 1018524913158316217,
+      name: r'sshPort',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'sshPort',
+          type: IndexType.value,
+          caseSensitive: true,
+        )
+      ],
     )
   },
   links: {},
@@ -129,6 +183,24 @@ int _serverEstimateSize(
     }
   }
   bytesCount += 3 + object.privateKey.length * 8;
+  {
+    final value = object.sshPassword;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.sshPort;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
+    final value = object.sshUsername;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -144,6 +216,9 @@ void _serverSerialize(
   writer.writeString(offsets[3], object.name);
   writer.writeString(offsets[4], object.port);
   writer.writeLongList(offsets[5], object.privateKey);
+  writer.writeString(offsets[6], object.sshPassword);
+  writer.writeString(offsets[7], object.sshPort);
+  writer.writeString(offsets[8], object.sshUsername);
 }
 
 Server _serverDeserialize(
@@ -160,6 +235,9 @@ Server _serverDeserialize(
   object.name = reader.readStringOrNull(offsets[3]);
   object.port = reader.readStringOrNull(offsets[4]);
   object.privateKey = reader.readLongList(offsets[5]) ?? [];
+  object.sshPassword = reader.readStringOrNull(offsets[6]);
+  object.sshPort = reader.readStringOrNull(offsets[7]);
+  object.sshUsername = reader.readStringOrNull(offsets[8]);
   return object;
 }
 
@@ -182,6 +260,12 @@ P _serverDeserializeProp<P>(
       return (reader.readStringOrNull(offset)) as P;
     case 5:
       return (reader.readLongList(offset) ?? []) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -226,6 +310,30 @@ extension ServerQueryWhereSort on QueryBuilder<Server, Server, QWhere> {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         const IndexWhereClause.any(indexName: r'port'),
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhere> anySshUsername() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'sshUsername'),
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhere> anySshPassword() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'sshPassword'),
+      );
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhere> anySshPort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'sshPort'),
       );
     });
   }
@@ -753,6 +861,474 @@ extension ServerQueryWhere on QueryBuilder<Server, Server, QWhereClause> {
             ))
             .addWhereClause(IndexWhereClause.lessThan(
               indexName: r'port',
+              upper: [''],
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshUsername',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshUsername',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameEqualTo(
+      String? sshUsername) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshUsername',
+        value: [sshUsername],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameNotEqualTo(
+      String? sshUsername) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshUsername',
+              lower: [],
+              upper: [sshUsername],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshUsername',
+              lower: [sshUsername],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshUsername',
+              lower: [sshUsername],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshUsername',
+              lower: [],
+              upper: [sshUsername],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameGreaterThan(
+    String? sshUsername, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshUsername',
+        lower: [sshUsername],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameLessThan(
+    String? sshUsername, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshUsername',
+        lower: [],
+        upper: [sshUsername],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameBetween(
+    String? lowerSshUsername,
+    String? upperSshUsername, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshUsername',
+        lower: [lowerSshUsername],
+        includeLower: includeLower,
+        upper: [upperSshUsername],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameStartsWith(
+      String SshUsernamePrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshUsername',
+        lower: [SshUsernamePrefix],
+        upper: ['$SshUsernamePrefix\u{FFFFF}'],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshUsername',
+        value: [''],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshUsernameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshUsername',
+              upper: [''],
+            ))
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshUsername',
+              lower: [''],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshUsername',
+              lower: [''],
+            ))
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshUsername',
+              upper: [''],
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPassword',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPassword',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordEqualTo(
+      String? sshPassword) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPassword',
+        value: [sshPassword],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordNotEqualTo(
+      String? sshPassword) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPassword',
+              lower: [],
+              upper: [sshPassword],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPassword',
+              lower: [sshPassword],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPassword',
+              lower: [sshPassword],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPassword',
+              lower: [],
+              upper: [sshPassword],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordGreaterThan(
+    String? sshPassword, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPassword',
+        lower: [sshPassword],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordLessThan(
+    String? sshPassword, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPassword',
+        lower: [],
+        upper: [sshPassword],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordBetween(
+    String? lowerSshPassword,
+    String? upperSshPassword, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPassword',
+        lower: [lowerSshPassword],
+        includeLower: includeLower,
+        upper: [upperSshPassword],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordStartsWith(
+      String SshPasswordPrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPassword',
+        lower: [SshPasswordPrefix],
+        upper: ['$SshPasswordPrefix\u{FFFFF}'],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPassword',
+        value: [''],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPasswordIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshPassword',
+              upper: [''],
+            ))
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshPassword',
+              lower: [''],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshPassword',
+              lower: [''],
+            ))
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshPassword',
+              upper: [''],
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPort',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPort',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortEqualTo(
+      String? sshPort) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPort',
+        value: [sshPort],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortNotEqualTo(
+      String? sshPort) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPort',
+              lower: [],
+              upper: [sshPort],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPort',
+              lower: [sshPort],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPort',
+              lower: [sshPort],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'sshPort',
+              lower: [],
+              upper: [sshPort],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortGreaterThan(
+    String? sshPort, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPort',
+        lower: [sshPort],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortLessThan(
+    String? sshPort, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPort',
+        lower: [],
+        upper: [sshPort],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortBetween(
+    String? lowerSshPort,
+    String? upperSshPort, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPort',
+        lower: [lowerSshPort],
+        includeLower: includeLower,
+        upper: [upperSshPort],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortStartsWith(
+      String SshPortPrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'sshPort',
+        lower: [SshPortPrefix],
+        upper: ['$SshPortPrefix\u{FFFFF}'],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'sshPort',
+        value: [''],
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterWhereClause> sshPortIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshPort',
+              upper: [''],
+            ))
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshPort',
+              lower: [''],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'sshPort',
+              lower: [''],
+            ))
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'sshPort',
               upper: [''],
             ));
       }
@@ -1662,6 +2238,444 @@ extension ServerQueryFilter on QueryBuilder<Server, Server, QFilterCondition> {
       );
     });
   }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sshPassword',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sshPassword',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sshPassword',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'sshPassword',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'sshPassword',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshPassword',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPasswordIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sshPassword',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sshPort',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sshPort',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sshPort',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'sshPort',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'sshPort',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshPort',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshPortIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sshPort',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'sshUsername',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'sshUsername',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sshUsername',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'sshUsername',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'sshUsername',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sshUsername',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterFilterCondition> sshUsernameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sshUsername',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension ServerQueryObject on QueryBuilder<Server, Server, QFilterCondition> {}
@@ -1702,6 +2716,42 @@ extension ServerQuerySortBy on QueryBuilder<Server, Server, QSortBy> {
   QueryBuilder<Server, Server, QAfterSortBy> sortByPortDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'port', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshPassword() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPassword', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshPasswordDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPassword', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshPort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPort', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshPortDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPort', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshUsername() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshUsername', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> sortBySshUsernameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshUsername', Sort.desc);
     });
   }
 }
@@ -1754,6 +2804,42 @@ extension ServerQuerySortThenBy on QueryBuilder<Server, Server, QSortThenBy> {
       return query.addSortBy(r'port', Sort.desc);
     });
   }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshPassword() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPassword', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshPasswordDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPassword', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshPort() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPort', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshPortDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshPort', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshUsername() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshUsername', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Server, Server, QAfterSortBy> thenBySshUsernameDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sshUsername', Sort.desc);
+    });
+  }
 }
 
 extension ServerQueryWhereDistinct on QueryBuilder<Server, Server, QDistinct> {
@@ -1793,6 +2879,27 @@ extension ServerQueryWhereDistinct on QueryBuilder<Server, Server, QDistinct> {
   QueryBuilder<Server, Server, QDistinct> distinctByPrivateKey() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'privateKey');
+    });
+  }
+
+  QueryBuilder<Server, Server, QDistinct> distinctBySshPassword(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sshPassword', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Server, Server, QDistinct> distinctBySshPort(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sshPort', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Server, Server, QDistinct> distinctBySshUsername(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sshUsername', caseSensitive: caseSensitive);
     });
   }
 }
@@ -1837,6 +2944,24 @@ extension ServerQueryProperty on QueryBuilder<Server, Server, QQueryProperty> {
   QueryBuilder<Server, List<int>, QQueryOperations> privateKeyProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'privateKey');
+    });
+  }
+
+  QueryBuilder<Server, String?, QQueryOperations> sshPasswordProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sshPassword');
+    });
+  }
+
+  QueryBuilder<Server, String?, QQueryOperations> sshPortProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sshPort');
+    });
+  }
+
+  QueryBuilder<Server, String?, QQueryOperations> sshUsernameProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sshUsername');
     });
   }
 }
