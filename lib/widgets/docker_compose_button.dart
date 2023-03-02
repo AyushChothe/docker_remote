@@ -21,7 +21,6 @@ class DockerComposeButton extends StatelessWidget {
         onPressed: () {
           showDialog(
             context: context,
-            barrierDismissible: false,
             builder: (_) => Dialog(
               child: ProviderScope(
                 parent: ProviderScope.containerOf(context),
