@@ -14,3 +14,9 @@ openssl x509 -req -days 365 -sha256 -in client.csr -CA ca.pem -CAkey ca-key.pem 
 rm -v client.csr server.csr extfile.cnf extfile-client.cnf
 chmod -v 0400 ca-key.pem key.pem server-key.pem
 chmod -v 0444 ca.pem server-cert.pem cert.pem
+mkdir -pv ~/.docker
+cp -v *.pem ~/.docker
+# Modify: /lib/systemd/system/docker.service
+# Add: --tlsverify --tlscacert=~/.docker/ca.pem --tlscert=~/.docker/server-cert.pem --tlskey=~/.docker/server-key.pem -H fd:// -H tcp://0.0.0.0:2376 --containerd=/run/containerd/containerd.sock
+# systemctl daemon-reload
+# sudo service docker restart
