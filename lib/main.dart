@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:is_wear/is_wear.dart' show IsWear;
 import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
 
 // flutter run -d chrome --web-browser-flag "--disable-web-security"
 void main() async {
@@ -15,7 +16,12 @@ void main() async {
   if (await IsWear().check() ?? false) {
     runApp(const ProviderScope(child: MyWearApp()));
   } else {
-    final isar = await Isar.open([ServerSchema], inspector: false);
+    final dir = await getApplicationDocumentsDirectory();
+    final isar = await Isar.open(
+      [ServerSchema],
+      inspector: false,
+      directory: dir.path,
+    );
     runApp(DevicePreview(
       enabled: !kReleaseMode,
       builder: (_) => ProviderScope(

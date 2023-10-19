@@ -57,6 +57,7 @@ class ServerTile extends HookConsumerWidget {
               ),
             );
           } catch (e) {
+            // ignore: use_build_context_synchronously
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Failed to connect to Server")));
           }

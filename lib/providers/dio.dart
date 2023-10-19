@@ -26,8 +26,7 @@ final dioProvider = FutureProvider<Dio>((ref) async {
       certs.rootCACertificate.isNotEmpty &&
       certs.clientCertificate.isNotEmpty &&
       certs.privateKey.isNotEmpty) {
-    (dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
-        (client) {
+    (dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
       SecurityContext context = SecurityContext(withTrustedRoots: true);
       context.setTrustedCertificatesBytes(
           Uint8List.fromList(certs.rootCACertificate));

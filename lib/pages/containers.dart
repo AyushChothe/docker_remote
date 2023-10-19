@@ -1,6 +1,5 @@
 import 'package:docker_remote/models/docker_compose.dart';
 import 'package:docker_remote/models/docker_container.dart';
-import 'package:docker_remote/pages/docker_compose_ui.dart';
 import 'package:docker_remote/providers/docker_api.dart';
 import 'package:docker_remote/utils/docker_compose_utils.dart';
 import 'package:docker_remote/widgets/container_tile.dart';

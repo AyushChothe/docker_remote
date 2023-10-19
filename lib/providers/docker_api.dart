@@ -87,7 +87,7 @@ final pullImage = FutureProvider.family.autoDispose((ref, String image) async {
         .transform(ConsoleAggregationTransformer())
         .asBroadcastStream();
     return res;
-  } on DioError {
+  } on DioException {
     return Future.error("Something went wrong");
   } catch (e) {
     debugPrint(e.toString());

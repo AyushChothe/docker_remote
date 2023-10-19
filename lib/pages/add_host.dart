@@ -88,10 +88,14 @@ class AddHostPage extends HookConsumerWidget {
                                               return Card(
                                                 child: ListTile(
                                                   onTap: () {
-                                                    host.text = values[i].ip;
+                                                    host.text = values[i]
+                                                        .internetAddress
+                                                        .address;
                                                     Navigator.pop(context);
                                                   },
-                                                  title: Text(values[i].ip),
+                                                  title: Text(values[i]
+                                                      .internetAddress
+                                                      .address),
                                                 ),
                                               );
                                             }),

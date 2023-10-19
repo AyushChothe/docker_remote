@@ -30,7 +30,7 @@ class DockerImage {
     try {
       await dio?.delete("/images/$id");
       return "Image deleted successfully";
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return (e.response?.data["message"]);
     } catch (e) {
       return "Something went wrong";

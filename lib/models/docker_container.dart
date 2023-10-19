@@ -45,7 +45,7 @@ class DockerContainer {
     try {
       await dio?.post("/containers/$id/start");
       return "Container started";
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return e.response?.data is Map
           ? (e.response?.data["message"])
           : "Container already started";
@@ -58,7 +58,7 @@ class DockerContainer {
     try {
       await dio?.post("/containers/$id/stop");
       return "Container stopped";
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return e.response?.data is Map
           ? (e.response?.data["message"])
           : "Container already stopped";
@@ -71,7 +71,7 @@ class DockerContainer {
     try {
       await dio?.post("/containers/$id/restart");
       return "Container restarted";
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return (e.response?.data["message"]);
     } catch (e) {
       return "Something went wrong";
@@ -82,7 +82,7 @@ class DockerContainer {
     try {
       await dio?.delete("/containers/$id");
       return "Container removed";
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       return (e.response?.data["message"]);
     } catch (e) {
       return "Something went wrong";
