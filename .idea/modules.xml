@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/packages/common/melos_common.iml" filepath="$PROJECT_DIR$/packages/common/melos_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apps/main/melos_docker_remote.iml" filepath="$PROJECT_DIR$/apps/main/melos_docker_remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/apps/wear/melos_docker_remote_wear.iml" filepath="$PROJECT_DIR$/apps/wear/melos_docker_remote_wear.iml" />
+      <module fileurl="file://$PROJECT_DIR$/melos_docker_remote.iml" filepath="$PROJECT_DIR$/melos_docker_remote.iml" />
+    </modules>
+  </component>
+</project>

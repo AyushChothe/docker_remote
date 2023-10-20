@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "path": ".",
+            "name": "root"
+        },
+        {
+            "path": "packages/common",
+        },
+        {
+            "path": "apps/main",
+        },
+        {
+            "path": "apps/wear",
+        },
+    ]
+}
